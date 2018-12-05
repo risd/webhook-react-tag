@@ -48,7 +48,7 @@
 // Modules
 var React = require("react");
 var ReactDOMServer = require("react-dom/server");
-var components = {}
+var components = {};
 // Literals
 var STR_WITH = "with";
 var STR_OBJ_OPEN = "{";
@@ -183,8 +183,8 @@ function renderReactComponentToString(componentName, props) {
     return ReactDOMServer.renderToString(reactElement);
   } else {
     console.error(`"${componentName}" component does not exist in components supplied.
-      Try extending @risd/webhook-react-tag with an object that includes ${ componentName }.
-      ie: require('@risd/webhook-react-tag').components( { ${ componentName } } )`);
+      Try extending @risd/webhook-react-tag with an object that includes ${componentName}.
+      ie: require('@risd/webhook-react-tag').components( { ${componentName} } )`);
   }
 }
 
@@ -196,9 +196,8 @@ module.exports = {
   parse: parse,
   extension: renderReactComponentToString,
   components: extendComponents,
-  useTag: useTag,
+  useTag: useTag
 };
-
 
 /**
  * Helper to extend the possible components that the react
@@ -207,20 +206,19 @@ module.exports = {
  * Expects the arguments to be objects that contains keys
  * that represent component names & their values being the
  * component.
- * 
+ *
  * @return {object} this  Returns the current object context;
  */
-function extendComponents () {
-  for ( argumentIndex in arguments ) {
-    var componentObject = arguments[ argumentIndex ]
-    if ( typeof componentObject !== 'object' ) {
-      throw new Error( '`extendComponents` expects objects to be passed in.' )
+function extendComponents() {
+  for (argumentIndex in arguments) {
+    var componentObject = arguments[argumentIndex];
+    if (typeof componentObject !== "object") {
+      throw new Error("`extendComponents` expects objects to be passed in.");
     }
-    Object.assign( components, componentObject )
+    Object.assign(components, componentObject);
   }
   return this;
 }
-
 
 /**
  * Helper to enable react tag on a swig instance.
@@ -235,7 +233,7 @@ function extendComponents () {
  *                               is "react".
  * @return {undefined}
  */
-function useTag (swig, customName) {
+function useTag(swig, customName) {
   swig.setExtension(name, renderReactComponentToString);
   swig.setTag(customName || name, parse, compile, ends, blockLevel);
 }
