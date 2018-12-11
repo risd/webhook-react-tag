@@ -49,6 +49,7 @@
 var React = require("react");
 var ReactDOMServer = require("react-dom/server");
 var components = {};
+var ThemeProvider = null;
 var theme = {};
 // Literals
 var STR_WITH = "with";
@@ -182,7 +183,7 @@ function renderReactComponentToString(componentName, props) {
     var Component = components[componentName];
     var componentElement = React.createElement(Component, props);
     var themeProviderElement = React.createElement(
-      components.ThemeProvider,
+      ThemeProvider,
       { theme },
       componentElement
     );
@@ -201,8 +202,9 @@ module.exports = {
   compile: compile,
   parse: parse,
   extension: renderReactComponentToString,
-  components: extendComponents,
-  theme: extendTheme,
+  setComponents: extendComponents,
+  setThemeProvider: setThemeProvider,
+  setTheme: setTheme,
   useTag: useTag
 };
 
@@ -228,22 +230,26 @@ function extendComponents() {
 }
 
 /**
- * Helper to extend the possible theme that the react
- * tag has access to rendering.
+ * Helper to set the ThemeProvider used by components.
  *
- * Expects the arguments to be objects that contains keys
- * that represent theme props.
+ * Expects the arguments to be a ThemeProvider React component.
  *
  * @return {object} this  Returns the current object context;
  */
-function extendTheme() {
-  for (argumentIndex in arguments) {
-    var themeObject = arguments[argumentIndex];
-    if (typeof themeObject !== "object") {
-      throw new Error("`extendTheme` expects objects to be passed in.");
-    }
-    Object.assign(theme, themeObject);
-  }
+function setThemeProvider(CustomThemeProvider) {
+  ThemeProvider = CustomThemeProvider;
+  return this;
+}
+
+/**
+ * Helper to set the theme used by components.
+ *
+ * Expects the arguments to be an Theme object.
+ *
+ * @return {object} this  Returns the current object context;
+ */
+function setTheme(customTheme) {
+  theme = customTheme;
   return this;
 }
 
