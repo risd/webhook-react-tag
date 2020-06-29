@@ -182,7 +182,7 @@ function renderReactComponentToString(componentName, props) {
     var reactElement = React.createElement(Component, props);
     return ReactDOMServer.renderToString(reactElement);
   } else {
-    console.error(`"${componentName}" component does not exist in components supplied.
+    throw new Error(`"${componentName}" component does not exist in components supplied.
       Try extending @risd/webhook-react-tag with an object that includes ${ componentName }.
       ie: require('@risd/webhook-react-tag').components( { ${ componentName } } )`);
   }
