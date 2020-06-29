@@ -48,7 +48,9 @@
 // Modules
 var React = require("react");
 var ReactDOMServer = require("react-dom/server");
-var components = {}
+var components = {};
+var ThemeProvider = null;
+var theme = {};
 // Literals
 var STR_WITH = "with";
 var STR_OBJ_OPEN = "{";
@@ -179,8 +181,13 @@ function parse(str, line, parser, types, stack, opts) {
 function renderReactComponentToString(componentName, props) {
   if (components.hasOwnProperty(componentName)) {
     var Component = components[componentName];
-    var reactElement = React.createElement(Component, props);
-    return ReactDOMServer.renderToString(reactElement);
+    var componentElement = React.createElement(Component, props);
+    var themeProviderElement = React.createElement(
+      ThemeProvider,
+      { theme },
+      componentElement
+    );
+    return ReactDOMServer.renderToString(themeProviderElement);
   } else {
     throw new Error(`"${componentName}" component does not exist in components supplied.
       Try extending @risd/webhook-react-tag with an object that includes ${ componentName }.
@@ -195,10 +202,11 @@ module.exports = {
   compile: compile,
   parse: parse,
   extension: renderReactComponentToString,
-  components: extendComponents,
-  useTag: useTag,
+  setComponents: extendComponents,
+  setThemeProvider: setThemeProvider,
+  setTheme: setTheme,
+  useTag: useTag
 };
-
 
 /**
  * Helper to extend the possible components that the react
@@ -207,20 +215,43 @@ module.exports = {
  * Expects the arguments to be objects that contains keys
  * that represent component names & their values being the
  * component.
- * 
+ *
  * @return {object} this  Returns the current object context;
  */
-function extendComponents () {
-  for ( argumentIndex in arguments ) {
-    var componentObject = arguments[ argumentIndex ]
-    if ( typeof componentObject !== 'object' ) {
-      throw new Error( '`extendComponents` expects objects to be passed in.' )
+function extendComponents() {
+  for (argumentIndex in arguments) {
+    var componentObject = arguments[argumentIndex];
+    if (typeof componentObject !== "object") {
+      throw new Error("`extendComponents` expects objects to be passed in.");
     }
-    Object.assign( components, componentObject )
+    Object.assign(components, componentObject);
   }
   return this;
 }
 
+/**
+ * Helper to set the ThemeProvider used by components.
+ *
+ * Expects the arguments to be a ThemeProvider React component.
+ *
+ * @return {object} this  Returns the current object context;
+ */
+function setThemeProvider(CustomThemeProvider) {
+  ThemeProvider = CustomThemeProvider;
+  return this;
+}
+
+/**
+ * Helper to set the theme used by components.
+ *
+ * Expects the arguments to be an Theme object.
+ *
+ * @return {object} this  Returns the current object context;
+ */
+function setTheme(customTheme) {
+  theme = customTheme;
+  return this;
+}
 
 /**
  * Helper to enable react tag on a swig instance.
@@ -235,7 +266,7 @@ function extendComponents () {
  *                               is "react".
  * @return {undefined}
  */
-function useTag (swig, customName) {
+function useTag(swig, customName) {
   swig.setExtension(name, renderReactComponentToString);
   swig.setTag(customName || name, parse, compile, ends, blockLevel);
 }
