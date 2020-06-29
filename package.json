@@ -1,6 +1,6 @@
 {
   "name": "@risd/webhook-react-tag",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Render a react component from within webhook using swig templates.",
   "main": "index.js",
   "scripts": {
